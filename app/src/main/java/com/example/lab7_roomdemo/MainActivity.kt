@@ -1,5 +1,6 @@
 package com.example.lab7_roomdemo
 
+import android.app.Application
 import android.icu.text.CaseMap
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -18,16 +19,23 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.lab7_roomdemo.ui.theme.Lab7_RoomDemoTheme
 
 class MainActivity : ComponentActivity() {
@@ -37,10 +45,30 @@ class MainActivity : ComponentActivity() {
         setContent {
             Lab7_RoomDemoTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    ScreenSetup(modifier = Modifier.padding(innerPadding))
+                    val owner = LocalViewModelStoreOwner.current
+                    owner?.let{
+                        val viewModel: MainViewModel = viewModel(
+                            it,
+                            "MainViewModel",
+                            MainViewModelFactory(
+                                LocalContext.current.applicationContext as Application
+                            )
+                        )
+                        ScreenSetup(modifier = Modifier.padding(innerPadding),
+                            viewModel = viewModel
+                        )
+
+                    }
+
                 }
             }
         }
+    }
+}
+
+class MainViewModelFactory(val application: Application): ViewModelProvider.Factory {
+    override fun <T: ViewModel> create(modelClass: Class<T>): T {
+        return MainViewModel(application) as T
     }
 }
 
@@ -101,19 +129,30 @@ fun CustomTextField(
 }
 
 @Composable
-fun MainScrenn(modifier: Modifier = Modifier){
-
+fun MainScrenn(
+    modifier: Modifier = Modifier,
+    allProducts: List<Product>,
+    searchResults: List<Product>,
+    viewModel: MainViewModel
+){
 }
 
 @Composable
-fun ScreenSetup(modifier: Modifier = Modifier) {
-    MainScrenn(modifier)
+fun ScreenSetup(modifier: Modifier = Modifier, viewModel: MainViewModel) {
+    val allProducts by viewModel.allProducts.observeAsState(listOf())
+    val searchResults by viewModel.allProducts.observeAsState(listOf())
+    MainScrenn(
+        modifier = modifier,
+        allProducts = allProducts,
+        searchResults = searchResults,
+        viewModel = viewModel
+    )
 }
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     Lab7_RoomDemoTheme {
-        ScreenSetup()
+
     }
 }
