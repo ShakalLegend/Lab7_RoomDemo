@@ -11,12 +11,12 @@ class Product {
 
     @ColumnInfo(name = "productName")
     var productName: String = ""
-    var quentity: Int = 0
+    var quantity: Int = 0
 
     constructor()
 
-    constructor(productName: String, quentity: Int) {
+    constructor(productName: String, quantity: Int) {
         this.productName = productName
-        this.quentity = quentity
+        this.quantity = quantity
     }
 }
