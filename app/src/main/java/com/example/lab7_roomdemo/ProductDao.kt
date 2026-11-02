@@ -1,6 +1,5 @@
 package com.example.lab7_roomdemo
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.liveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
