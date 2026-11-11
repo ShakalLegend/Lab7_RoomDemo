@@ -9,6 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -154,80 +155,82 @@ fun MainScrenn(
     val onQuantityTextChange = {
             text: String -> productQuantity = text
     }
+    Column() {
+        CustomTextField(
+            title = "Product Name",
+            textState = productName,
+            onTextChange = onProductTextChange,
+            keyboardType = KeyboardType.Text
+        )
 
-    CustomTextField(
-        title = "Product Name",
-        textState = productName,
-        onTextChange = onProductTextChange,
-        keyboardType = KeyboardType.Text
-    )
+        CustomTextField(
+            title = "Quantity",
+            textState = productQuantity,
+            onTextChange = onQuantityTextChange,
+            keyboardType = KeyboardType.Number
+        )
 
-    CustomTextField(
-        title = "Quantity",
-        textState = productQuantity,
-        onTextChange = onQuantityTextChange,
-        keyboardType = KeyboardType.Number
-    )
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+        ){
+            Button(onClick = {
+                if (productQuantity.isNotEmpty()) {
+                    viewModel.insertProduct(
+                        Product(
+                            productName,
+                            productQuantity.toInt()
+                        )
+                    )
+                    searching = false
+                }
+            }) {
+                Text("Add")
+            }
 
-    Row(
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        modifier = Modifier
+            Button(onClick = {
+                searching = true
+                viewModel.findProduct(productName)
+            }) {
+                Text("Search")
+            }
+
+            Button(onClick = {
+                searching = false
+                viewModel.deleteProduct(productName)
+            }) {
+                Text("Delete")
+            }
+
+            Button(onClick = {
+                searching = false
+                productName = ""
+                productQuantity = ""
+            }) {
+                Text("Clear")
+            }
+        }
+        LazyColumn(Modifier
             .fillMaxWidth()
             .padding(10.dp)
-    ){
-        Button(onClick = {
-            if (productQuantity.isNotEmpty()) {
-                viewModel.insertProduct(
-                    Product(
-                        productName,
-                        productQuantity.toInt()
-                    )
-                )
-                searching = false
+        ) {
+            val list = if (searching) searchResults else allProducts
+
+            item {
+                TitleRow("ID", "Product", "Quantity")
             }
-        }) {
-            Text("Add")
-        }
 
-        Button(onClick = {
-            searching = true
-            viewModel.findProduct(productName)
-        }) {
-            Text("Search")
-        }
+            items(list) { product ->
+                ProductRow(id = product.id, name = product.productName,
+                    quantity = product.quantity
+                )
 
-        Button(onClick = {
-            searching = false
-            viewModel.deleteProduct(productName)
-        }) {
-            Text("Delete")
-        }
-
-        Button(onClick = {
-            searching = false
-            productName = ""
-            productQuantity = ""
-        }) {
-            Text("Clear")
+            }
         }
     }
-    LazyColumn(Modifier
-        .fillMaxWidth()
-        .padding(10.dp)
-    ) {
-        val list = if (searching) searchResults else allProducts
 
-        item {
-            TitleRow("ID", "Product", "Quantity")
-        }
-
-        items(list) { product ->
-            ProductRow(id = product.id, name = product.productName,
-                quantity = product.quantity
-            )
-
-        }
-    }
 }
 
 @Composable
@@ -246,6 +249,5 @@ fun ScreenSetup(modifier: Modifier = Modifier, viewModel: MainViewModel) {
 @Composable
 fun GreetingPreview() {
     Lab7_RoomDemoTheme {
-
     }
 }
