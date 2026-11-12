@@ -30,4 +30,12 @@ class MainViewModel(application: Application): ViewModel() {
     fun deleteProduct(name: String) {
         repository.deleteProduct(name)
     }
+
+    fun clearSearch() {
+        repository.searchResults.value = emptyList()
+    }
+
+    fun deleteAllProducts() {
+        repository.deleteAllProducts()
+    }
 }

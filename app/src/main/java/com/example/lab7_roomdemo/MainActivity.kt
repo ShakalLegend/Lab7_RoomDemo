@@ -205,9 +205,15 @@ fun MainScrenn(
             }
 
             Button(onClick = {
-                searching = false
-                productName = ""
-                productQuantity = ""
+                if (searching) {
+                    searching = false
+                    productName = ""
+                    productQuantity = ""
+                    viewModel.clearSearch()
+                }
+                else {
+                    viewModel.deleteAllProducts()
+                }
             }) {
                 Text("Clear")
             }
@@ -236,18 +242,11 @@ fun MainScrenn(
 @Composable
 fun ScreenSetup(modifier: Modifier = Modifier, viewModel: MainViewModel) {
     val allProducts by viewModel.allProducts.observeAsState(listOf())
-    val searchResults by viewModel.allProducts.observeAsState(listOf())
+    val searchResults by viewModel.searchResults.observeAsState(listOf())
     MainScrenn(
         modifier = modifier,
         allProducts = allProducts,
         searchResults = searchResults,
         viewModel = viewModel
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Lab7_RoomDemoTheme {
-    }
 }

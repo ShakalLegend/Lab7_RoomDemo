@@ -18,4 +18,7 @@ interface ProductDao {
 
     @Query("SELECT * FROM products")
     fun getAllProducts(): LiveData<List<Product>>
+
+    @Query("DELETE FROM products")
+    fun deleteAllProducts()
 }

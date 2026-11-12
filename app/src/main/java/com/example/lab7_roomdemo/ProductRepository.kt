@@ -3,10 +3,9 @@ package com.example.lab7_roomdemo
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ProductRepository(private val productDao: ProductDao) {
     val allProducts: LiveData<List<Product>> = productDao.getAllProducts()
@@ -26,13 +25,18 @@ class ProductRepository(private val productDao: ProductDao) {
     }
 
     fun findProduct(name: String) {
-        coroutineScope.launch(Dispatchers.IO){
-            searchResults.value = asyncFind(name).await()
+        coroutineScope.launch(Dispatchers.IO) {
+            val result = productDao.findProduct(name)
+            withContext(Dispatchers.Main) {
+                searchResults.value = result
+            }
         }
     }
-    private fun asyncFind(name: String): Deferred<List<Product>?> =
-        coroutineScope.async(Dispatchers.IO) {
-            return@async productDao.findProduct(name)
+
+    fun deleteAllProducts() {
+        coroutineScope.launch(Dispatchers.IO){
+            productDao.deleteAllProducts()
         }
+    }
 }
 
